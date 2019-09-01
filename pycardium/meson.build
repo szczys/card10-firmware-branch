@@ -14,6 +14,7 @@ modsrc = files(
   'modules/personal_state.c',
   'modules/power.c',
   'modules/sys_display.c',
+  'modules/sys_displaybuffer.c',
   'modules/utime.c',
   'modules/vibra.c',
   'modules/bme680.c',

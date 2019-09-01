@@ -95,6 +95,10 @@ Q(line)
 Q(rect)
 Q(circ)
 Q(clear)
+
+/* displaybuffer */
+Q(sys_displaybuffer)
+Q(displaybuffer)
 Q(setbuff)
 Q(rainbowbuff)
 Q(clrbuff)

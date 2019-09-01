@@ -3,6 +3,7 @@ python_modules = files(
   'color.py',
   'htmlcolor.py',
   'display.py',
+  'displaybuffer.py',
   'leds.py',
   'max30001.py',
   'pride.py',

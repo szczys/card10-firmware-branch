@@ -181,50 +181,6 @@ class Display:
         sys_display.circ(x, y, rad, col, filled, size)
         return self
 
-    def setbuff(self, x, y, msb, lsb):
-        """
-        Writes a pixel to the buffer.
-
-        :param x: x coordinate in buffer, 0 <= x <= 159
-        :param y: y coordinate in buffer, 0 <= y <= 79
-        :param msb: most significant Byte of 16-bit color
-        :param lsb: least significant Byte of 16-bit color
-        """
-        
-        sys_display.setbuff(x, y, msb, lsb)
-        return self
-
-    def rainbowbuff(self, offset):
-        """
-        Writes a rainbow pattern to the buffer.
-
-        :param offset: x offset for color pattern, 0 <= x <= 71
-        """
-        
-        sys_display.rainbowbuff(offset)
-        return self
-
-    def clrbuff(self):
-        """
-        Clears the framebuffer.
-        """
-        sys_display.clrbuff()
-        return self
-
-    def showbuff(self):
-        """
-        Blits the framebuffer to the display.
-        """
-        sys_display.showbuff()
-        return self
-
-    def wrencher(self):
-        """
-        Draws a Hackaday logo on the framebuffer.
-        """
-        sys_display.wrencher()
-        return self
-
 
 open = Display.open
 close = Display.close

@@ -50,6 +50,7 @@ int mp_hal_trng_read_int(void);
 #define MODULE_BME680_ENABLED               (1)
 #define MODULE_BUTTONS_ENABLED              (1)
 #define MODULE_DISPLAY_ENABLED              (1)
+#define MODULE_DISPLAYBUFFER_ENABLED        (1)
 #define MODULE_GPIO_ENABLED                 (1)
 #define MODULE_INTERRUPT_ENABLED            (1)
 #define MODULE_LEDS_ENABLED                 (1)
