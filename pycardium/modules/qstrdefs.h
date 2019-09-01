@@ -95,6 +95,11 @@ Q(line)
 Q(rect)
 Q(circ)
 Q(clear)
+Q(setbuff)
+Q(rainbowbuff)
+Q(clrbuff)
+Q(showbuff)
+Q(wrencher)
 
 /* ambient */
 Q(light_sensor)
