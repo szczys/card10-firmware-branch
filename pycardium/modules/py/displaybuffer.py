@@ -100,6 +100,19 @@ class Displaybuffer:
         sys_displaybuffer.driftnorth()
         return self
 
+    def driftwest(self):
+        """
+        Sand physics shifts pixels in framebuffer up a line.
+        """
+        sys_displaybuffer.driftwest()
+        return self
+
+    def drifteast(self):
+        """
+        Sand physics shifts pixels in framebuffer up a line.
+        """
+        sys_displaybuffer.drifteast()
+        return self
 
 open = Displaybuffer.open
 close = Displaybuffer.close

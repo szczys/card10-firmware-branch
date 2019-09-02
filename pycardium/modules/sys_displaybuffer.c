@@ -322,6 +322,79 @@ static mp_obj_t mp_displaybuffer_driftnorth()
 }
 static MP_DEFINE_CONST_FUN_OBJ_0(displaybuffer_driftnorth_obj, mp_displaybuffer_driftnorth);
 
+static mp_obj_t mp_displaybuffer_driftwest() {
+  /* if cell below is empty, drop */
+  for (int16_t col=1; col<DISP_WIDTH; col++) {
+    for (int16_t row=DISP_HEIGHT-1; row>=0; row--) {
+      //Check if we should be dropping this grain
+      //FIXME: if (getSand(col,row, glassbuffer)) continue;  //Don't move cells that make up the hourglass itself
+      if (getSand(col,row)) {
+        if ((getSand(col-1,row) == 0) /*&& (notTouchingGlass(col-1,row,glassbuffer))*/) {
+          moveW(col,row); continue;
+        }
+        //Toggle alternates directions checked first, otherwise operations are the same
+        if (toggle) {
+          toggle = 0;
+          if ((row > 0) && (getSand(col-1,row-1) == 0) /*&& (notTouchingGlass(col-1,row-1,glassbuffer))*/){
+            moveNW(col,row); continue;
+          }
+          if ((row < (DISP_HEIGHT-1)) && (getSand(col-1,row+1) == 0) /*&& (notTouchingGlass(col-1,row+1,glassbuffer))*/) {
+            moveSW(col,row); continue;
+          }
+        }
+        else {
+          ++toggle;
+          if ((row < (DISP_HEIGHT-1)) && (getSand(col-1,row+1) == 0) /*&& (notTouchingGlass(col-1,row+1,glassbuffer))*/) {
+            moveSW(col,row); continue;
+          }
+          if ((row > 0) && (getSand(col-1,row-1) == 0) /*&& (notTouchingGlass(col-1,row-1,glassbuffer))*/){
+            moveNW(col,row); continue;
+          }
+        }
+      }
+    }
+  }
+	return mp_const_none;
+}
+static MP_DEFINE_CONST_FUN_OBJ_0(displaybuffer_driftwest_obj, mp_displaybuffer_driftwest);
+
+static mp_obj_t mp_displaybuffer_drifteast() {
+  /* if cell below is empty, drop */
+  for (int16_t col=DISP_WIDTH-2; col>=0; col--) {
+    for (uint16_t row=0; row<DISP_HEIGHT; row++) {
+      //Check if we should be dropping this grain
+      //FIXME: if (getSand(col,row, glassbuffer)) continue;  //Don't move cells that make up the hourglass itself
+      if (getSand(col,row)) {
+        if ((getSand(col+1,row) == 0) /*&& (notTouchingGlass(col+1,row,glassbuffer))*/) {
+          moveE(col,row); continue;
+        }
+        //Toggle alternates directions checked first, otherwise operations are the same
+        if (toggle) {
+          toggle=0;
+          if ((row > 0) && (getSand(col+1,row-1) == 0) /*&& (notTouchingGlass(col+1,row-1,glassbuffer))*/) {
+            moveNE(col,row); continue;
+          }
+          
+          if ((row < (DISP_HEIGHT-1)) && (getSand(col+1,row+1) == 0) /*&& (notTouchingGlass(col+1,row+1,glassbuffer))*/) {
+            moveSE(col,row); continue;
+          }
+        }
+        else {
+          ++toggle;       
+          if ((row < (DISP_HEIGHT-1)) && (getSand(col+1,row+1) == 0) /*&& (notTouchingGlass(col+1,row+1,glassbuffer))*/) {
+            moveSE(col,row); continue;
+          }
+          if ((row > 0) && (getSand(col+1,row-1) == 0) /*&& (notTouchingGlass(col+1,row-1,glassbuffer))*/) {
+            moveNE(col,row); continue;
+          }
+        }
+      }
+    }
+  }
+	return mp_const_none;
+}
+static MP_DEFINE_CONST_FUN_OBJ_0(displaybuffer_drifteast_obj, mp_displaybuffer_drifteast);
+
 static mp_obj_t mp_displaybuffer_open()
 {
 	int res = epic_disp_open();
@@ -354,6 +427,8 @@ static const mp_rom_map_elem_t displaybuffer_module_globals_table[] = {
   { MP_ROM_QSTR(MP_QSTR_wrencher), MP_ROM_PTR(&displaybuffer_wrencher_obj) },
   { MP_ROM_QSTR(MP_QSTR_driftsouth), MP_ROM_PTR(&displaybuffer_driftsouth_obj) },
   { MP_ROM_QSTR(MP_QSTR_driftnorth), MP_ROM_PTR(&displaybuffer_driftnorth_obj) },
+  { MP_ROM_QSTR(MP_QSTR_driftwest), MP_ROM_PTR(&displaybuffer_driftwest_obj) },
+  { MP_ROM_QSTR(MP_QSTR_drifteast), MP_ROM_PTR(&displaybuffer_drifteast_obj) },
 };
 static MP_DEFINE_CONST_DICT(
 	displaybuffer_module_globals, displaybuffer_module_globals_table

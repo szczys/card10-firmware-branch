@@ -106,6 +106,8 @@ Q(showbuff)
 Q(wrencher)
 Q(driftsouth)
 Q(driftnorth)
+Q(driftwest)
+Q(drifteast)
 
 /* ambient */
 Q(light_sensor)
