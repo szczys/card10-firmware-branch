@@ -59,7 +59,7 @@ class Displaybuffer:
         """
         Writes a rainbow pattern to the buffer.
 
-        :param offset: x offset for color pattern, 0 <= x <= 71
+        :param offset: x offset for color pattern, 0 <= x <= 95
         """
         
         sys_displaybuffer.rainbowbuff(offset)
