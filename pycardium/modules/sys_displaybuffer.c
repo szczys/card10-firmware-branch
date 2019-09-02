@@ -8,6 +8,9 @@
 #include <stdio.h>
 
 union disp_framebuffer fb;
+//union disp_framebuffer fb2;
+//int *currentfb;
+//int *workingfb;
 
 static const uint8_t hackaday[1220] = {
     1, 224, 0, 0, 0, 0, 0, 240, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -180,6 +183,145 @@ static mp_obj_t mp_displaybuffer_wrencher()
 }
 static MP_DEFINE_CONST_FUN_OBJ_0(displaybuffer_wrencher_obj, mp_displaybuffer_wrencher);
 
+uint8_t getSand(uint16_t x, uint16_t y) {
+  if (fb.fb[y][x][0] || fb.fb[y][x][1]) return 1;
+  else return 0;  
+}
+
+void setSand(uint16_t x, uint16_t y, uint8_t onoff) {
+  if (onoff > 0) { fb.fb[y][x][0] = 0xFF; fb.fb[y][x][1] = 0xFF; }
+  else { fb.fb[y][x][0] = 0; fb.fb[y][x][1] = 0; }
+}
+
+void moveN(uint16_t x, uint16_t y) {
+  setSand(x,y,0); setSand(x,y-1,1);
+}
+
+void moveNW(uint16_t x, uint16_t y) {
+  setSand(x,y,0); setSand(x-1,y-1,1);
+}
+
+void moveNE(uint16_t x, uint16_t y) {
+  setSand(x,y,0); setSand(x+1,y-1,1);
+}
+
+void moveS(uint16_t x, uint16_t y) {
+  setSand(x,y,0); setSand(x,y+1,1);
+}
+
+void moveSW(uint16_t x, uint16_t y) {
+  setSand(x,y,0); setSand(x-1,y+1,1);
+}
+
+void moveSE(uint16_t x, uint16_t y) {
+  setSand(x,y,0); setSand(x+1,y+1,1);
+}
+
+void moveW(uint16_t x, uint16_t y) {
+  setSand(x,y,0); setSand(x-1,y,1);
+}
+
+void moveE(uint16_t x, uint16_t y) {
+  setSand(x,y,0); setSand(x+1,y,1);
+}
+
+uint8_t notTouchingGlass(uint16_t x, uint16_t y) {
+  //Sand *should* always be in the hour glass so we don't check for y-axis buffer overflows
+
+  /*  
+  if (y>0) {
+    if (getSand(x,y-1,glassbuffer)) return 0;
+    if (getSand(x+1,y-1,glassbuffer)) return 0;
+    if (getSand(x-1,y-1,glassbuffer)) return 0;
+  }
+  if (getSand(x+1,y,glassbuffer)) return 0;
+  if (getSand(x-1,y,glassbuffer)) return 0;
+
+  if (y<(GRAINSDEEP-1)) {
+    if (getSand(x,y+1,glassbuffer)) return 0;
+    if (getSand(x+1,y+1,glassbuffer)) return 0;
+    if (getSand(x-1,y+1,glassbuffer)) return 0;
+  }
+  */
+  return 1;
+}
+
+uint8_t toggle;
+static mp_obj_t mp_displaybuffer_driftsouth()
+{
+  /* if cell below is empty, drop */
+  for (int16_t row=DISP_HEIGHT-2; row>=0; row--) {
+    for (uint16_t col=0; col<DISP_WIDTH; col++) {
+      //Check if we should be dropping this grain
+      //FIXME:if (getSand(col,row, glassbuffer)) continue;  //Don't move cells that make up the hourglass itself
+      if (getSand(col,row)) {
+        if ((getSand(col,row+1) == 0) /*&& (notTouchingGlass(col,row+1,glassbuffer))*/) {
+          moveS(col,row); continue;
+        }
+        //Toggle alternates directions checked first, otherwise operations are the same
+        if (toggle) {
+          toggle=0;
+          if ((col > 0) && (getSand(col-1,row+1) == 0) /*&& (notTouchingGlass(col-1,row+1,glassbuffer))*/) {
+            moveSW(col,row); continue;
+          }
+          
+          if ((col < (DISP_WIDTH-1)) && (getSand(col+1,row+1) == 0) /*&& (notTouchingGlass(col+1,row+1,glassbuffer))*/) {
+            moveSE(col,row); continue;
+          }
+        }
+        else {
+          ++toggle;       
+          if ((col < (DISP_WIDTH-1)) && (getSand(col+1,row+1) == 0) /*&& (notTouchingGlass(col+1,row+1,glassbuffer))*/) {
+            moveSE(col,row); continue;
+          }
+          if ((col > 0) && (getSand(col-1,row+1) == 0) /*&& (notTouchingGlass(col-1,row+1,glassbuffer))*/) {
+            moveSW(col,row); continue;
+          }
+        }
+      }
+    }
+  }
+	return mp_const_none;
+}
+static MP_DEFINE_CONST_FUN_OBJ_0(displaybuffer_driftsouth_obj, mp_displaybuffer_driftsouth);
+
+static mp_obj_t mp_displaybuffer_driftnorth()
+{ 
+  /* if cell below is empty, drop */
+  for (int16_t row=1; row<DISP_HEIGHT; row++) {
+    for (int16_t col=DISP_WIDTH-1; col>=0; col--) {
+      //Check if we should be dropping this grain
+      //FIXME: if (getSand(col,row, glassbuffer)) continue;  //Don't move cells that make up the hourglass itself
+      if (getSand(col,row)) {
+        if ((getSand(col,row-1) == 0) /*&& (notTouchingGlass(col,row-1,glassbuffer))*/) {
+          moveN(col,row); continue;
+        }
+        //Toggle alternates directions checked first, otherwise operations are the same
+        if (toggle) {
+          toggle = 0;
+          if ((col > 0) && (getSand(col-1,row-1) == 0) /*&& (notTouchingGlass(col-1,row-1,glassbuffer))*/){
+            moveNW(col,row); continue;
+          }
+          if ((col < (DISP_WIDTH-1)) && (getSand(col+1,row-1) == 0) /*&& (notTouchingGlass(col+1,row-1,glassbuffer))*/) {
+            moveNE(col,row); continue;
+          }
+        }
+        else {
+          ++toggle;
+          if ((col < (DISP_WIDTH-1)) && (getSand(col+1,row-1) == 0) /*&& (notTouchingGlass(col+1,row-1,glassbuffer))*/) {
+            moveNE(col,row); continue;
+          }
+          if ((col > 0) && (getSand(col-1,row-1) == 0) /*&& (notTouchingGlass(col-1,row-1,glassbuffer))*/){
+            moveNW(col,row); continue;
+          }
+        }
+      }
+    }
+  }
+	return mp_const_none;
+}
+static MP_DEFINE_CONST_FUN_OBJ_0(displaybuffer_driftnorth_obj, mp_displaybuffer_driftnorth);
+
 static mp_obj_t mp_displaybuffer_open()
 {
 	int res = epic_disp_open();
@@ -210,6 +352,8 @@ static const mp_rom_map_elem_t displaybuffer_module_globals_table[] = {
   { MP_ROM_QSTR(MP_QSTR_clrbuff), MP_ROM_PTR(&displaybuffer_clrbuff_obj) },
   { MP_ROM_QSTR(MP_QSTR_showbuff), MP_ROM_PTR(&displaybuffer_showbuff_obj) },
   { MP_ROM_QSTR(MP_QSTR_wrencher), MP_ROM_PTR(&displaybuffer_wrencher_obj) },
+  { MP_ROM_QSTR(MP_QSTR_driftsouth), MP_ROM_PTR(&displaybuffer_driftsouth_obj) },
+  { MP_ROM_QSTR(MP_QSTR_driftnorth), MP_ROM_PTR(&displaybuffer_driftnorth_obj) },
 };
 static MP_DEFINE_CONST_DICT(
 	displaybuffer_module_globals, displaybuffer_module_globals_table

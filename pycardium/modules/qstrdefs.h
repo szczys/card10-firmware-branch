@@ -104,6 +104,8 @@ Q(rainbowbuff)
 Q(clrbuff)
 Q(showbuff)
 Q(wrencher)
+Q(driftsouth)
+Q(driftnorth)
 
 /* ambient */
 Q(light_sensor)
