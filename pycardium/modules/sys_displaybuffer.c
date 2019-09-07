@@ -188,41 +188,40 @@ uint8_t getSand(uint16_t x, uint16_t y) {
   else return 0;  
 }
 
-void setSand(uint16_t x, uint16_t y, uint8_t onoff) {
-  if (onoff > 0) { fb.fb[y][x][0] = 0xFF; fb.fb[y][x][1] = 0xFF; }
-  else { fb.fb[y][x][0] = 0; fb.fb[y][x][1] = 0; }
+void setSand(uint16_t x, uint16_t y, uint8_t msb, uint8_t lsb) {
+  fb.fb[y][x][0] = msb; fb.fb[y][x][1] = lsb;
 }
 
 void moveN(uint16_t x, uint16_t y) {
-  setSand(x,y,0); setSand(x,y-1,1);
+  setSand(x,y-1,fb.fb[y][x][0],fb.fb[y][x][1]); setSand(x,y,0,0);
 }
 
 void moveNW(uint16_t x, uint16_t y) {
-  setSand(x,y,0); setSand(x-1,y-1,1);
+  setSand(x-1,y-1,fb.fb[y][x][0],fb.fb[y][x][1]); setSand(x,y,0,0);
 }
 
 void moveNE(uint16_t x, uint16_t y) {
-  setSand(x,y,0); setSand(x+1,y-1,1);
+  setSand(x+1,y-1,fb.fb[y][x][0],fb.fb[y][x][1]); setSand(x,y,0,0);
 }
 
 void moveS(uint16_t x, uint16_t y) {
-  setSand(x,y,0); setSand(x,y+1,1);
+  setSand(x,y+1,fb.fb[y][x][0],fb.fb[y][x][1]); setSand(x,y,0,0);
 }
 
 void moveSW(uint16_t x, uint16_t y) {
-  setSand(x,y,0); setSand(x-1,y+1,1);
+  setSand(x-1,y+1,fb.fb[y][x][0],fb.fb[y][x][1]); setSand(x,y,0,0);
 }
 
 void moveSE(uint16_t x, uint16_t y) {
-  setSand(x,y,0); setSand(x+1,y+1,1);
+  setSand(x+1,y+1,fb.fb[y][x][0],fb.fb[y][x][1]); setSand(x,y,0,0);
 }
 
 void moveW(uint16_t x, uint16_t y) {
-  setSand(x,y,0); setSand(x-1,y,1);
+  setSand(x-1,y,fb.fb[y][x][0],fb.fb[y][x][1]); setSand(x,y,0,0);
 }
 
 void moveE(uint16_t x, uint16_t y) {
-  setSand(x,y,0); setSand(x+1,y,1);
+  setSand(x+1,y,fb.fb[y][x][0],fb.fb[y][x][1]); setSand(x,y,0,0);
 }
 
 uint8_t notTouchingGlass(uint16_t x, uint16_t y) {
